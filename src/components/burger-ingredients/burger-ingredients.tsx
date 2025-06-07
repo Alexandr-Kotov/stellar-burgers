@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/services/store';
 
 export const BurgerIngredients: FC = () => {
-  /** TODO: взять переменные из стора */
   const buns: TIngredient[] = useSelector(
     (state: RootState) => state.ingredients.buns
   );
@@ -54,8 +53,6 @@ export const BurgerIngredients: FC = () => {
     if (tab === 'sauce')
       titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  // return null;
 
   return (
     <BurgerIngredientsUI

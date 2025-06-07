@@ -1,25 +1,30 @@
 import { FC, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { RootState } from 'src/services/store';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { selectAllIngredients } from '../../features/ingredients/ingredientsSelectors';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams<{ number: string }>();
 
-  const ingredients: TIngredient[] = [];
+  const ingredients = useSelector((state: RootState) =>
+    selectAllIngredients(state)
+  );
 
-  /* Готовим данные для отображения */
+  const orders = useSelector((state: RootState) => state.feed.orders);
+
+  const orderData = useMemo(() => {
+    if (!orders.length || !number) return null;
+    return (
+      orders.find((order: TOrder) => order.number.toString() === number) || null
+    );
+  }, [orders, number]);
+
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+    if (!orderData || ingredients.length === 0) return null;
 
     const date = new Date(orderData.createdAt);
 
@@ -28,19 +33,18 @@ export const OrderInfo: FC = () => {
     };
 
     const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
+      (acc: TIngredientsWithCount, id) => {
+        if (!acc[id]) {
+          const ingredient = ingredients.find((ing) => ing._id === id);
           if (ingredient) {
-            acc[item] = {
+            acc[id] = {
               ...ingredient,
               count: 1
             };
           }
         } else {
-          acc[item].count++;
+          acc[id].count++;
         }
-
         return acc;
       },
       {}

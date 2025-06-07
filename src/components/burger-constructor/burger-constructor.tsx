@@ -1,24 +1,51 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { useSelector } from 'react-redux';
-import { RootState } from 'src/services/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../services/store';
+import {
+  closeOrderModal,
+  placeOrder
+} from '../../features/orderSlice/orderSlice';
+import { fetchFeeds } from '../../features/feedSlice/feedSlice';
+import { fetchUserOrders } from '../../features/userOrdersSlice/userOrdersSlice';
+import { resetConstructor } from '../../features/constructor/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  const dispatch = useDispatch<AppDispatch>();
+
   const constructorItems = useSelector(
     (state: RootState) => state.constructorBurger.items
   );
   const orderRequest = useSelector(
-    (state: RootState) => state.constructorBurger.orderRequest
+    (state: RootState) => state.order.orderRequest
   );
   const orderModalData = useSelector(
-    (state: RootState) => state.constructorBurger.orderModalData
+    (state: RootState) => state.order.orderModalData
   );
-  const onOrderClick = () => {
+
+  const onOrderClick = async () => {
     if (!constructorItems.bun || orderRequest) return;
+
+    const ingredientsIds = [
+      constructorItems.bun._id,
+      ...constructorItems.ingredients.map((item) => item._id),
+      constructorItems.bun._id
+    ];
+
+    try {
+      await dispatch(placeOrder(ingredientsIds)).unwrap();
+      dispatch(fetchFeeds());
+      dispatch(fetchUserOrders());
+      dispatch(resetConstructor());
+    } catch (error) {
+      console.error('Ошибка при оформлении заказа:', error);
+    }
   };
-  const closeOrderModal = () => {};
+
+  const closeModal = () => {
+    dispatch(closeOrderModal());
+  };
 
   const price = useMemo(
     () =>
@@ -30,8 +57,6 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  // return null;
-
   return (
     <BurgerConstructorUI
       price={price}
@@ -39,7 +64,7 @@ export const BurgerConstructor: FC = () => {
       constructorItems={constructorItems}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      closeOrderModal={closeModal}
     />
   );
 };

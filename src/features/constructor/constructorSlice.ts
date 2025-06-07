@@ -7,7 +7,7 @@ interface ConstructorState {
     ingredients: TConstructorIngredient[];
   };
   orderRequest: boolean;
-  orderModalData: any; // замените на точный тип, если есть
+  orderModalData: any;
 }
 
 const initialState: ConstructorState = {
