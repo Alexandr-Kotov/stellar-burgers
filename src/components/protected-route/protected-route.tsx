@@ -1,8 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AppDispatch, RootState } from '../../services/store';
 import { fetchUser } from '../../features/profileSlice/profileSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -15,8 +14,8 @@ export const ProtectedRoute = ({
   authOnly,
   guestOnly
 }: ProtectedRouteProps) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { user, status } = useSelector((state: RootState) => state.profile);
+  const dispatch = useDispatch();
+  const { user, status } = useSelector((state) => state.profile);
   const location = useLocation();
 
   useEffect(() => {
@@ -29,7 +28,12 @@ export const ProtectedRoute = ({
     }
   }, [user, status, dispatch]);
 
-  if (authOnly && !user && status !== 'loading') {
+  if (
+    authOnly &&
+    !user &&
+    !document.cookie.includes('accessToken=') &&
+    status !== 'loading'
+  ) {
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
 

@@ -8,12 +8,11 @@ import {
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../..//services/store';
+import { useSelector } from '../../../services/store';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => !!state.profile.user);
+  const user = useSelector((state) => !!state.profile.user);
   const hasAccessToken = document.cookie.includes('accessToken=');
   const isAuth = !!user || hasAccessToken;
   const handleProfileClick = () => {
@@ -54,7 +53,9 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
           </>
         </div>
         <div className={styles.logo}>
-          <Logo className='' />
+          <NavLink to={'/'}>
+            <Logo className='' />
+          </NavLink>
         </div>
         <div
           className={`${styles.link} ${styles.link_position_last}`}

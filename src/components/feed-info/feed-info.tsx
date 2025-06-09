@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { useSelector } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from 'src/services/store';
+import { RootState, useSelector } from '../../services/store';
 import { FeedInfoUI } from '../ui/feed-info';
 
 const selectOrders = (state: RootState) => state.feed.orders;

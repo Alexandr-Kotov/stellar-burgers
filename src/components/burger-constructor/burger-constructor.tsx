@@ -1,8 +1,6 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../services/store';
 import {
   closeOrderModal,
   placeOrder
@@ -10,22 +8,27 @@ import {
 import { fetchFeeds } from '../../features/feedSlice/feedSlice';
 import { fetchUserOrders } from '../../features/userOrdersSlice/userOrdersSlice';
 import { resetConstructor } from '../../features/constructor/constructorSlice';
+import { useDispatch, useSelector } from '../../services/store';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const constructorItems = useSelector(
-    (state: RootState) => state.constructorBurger.items
+    (state) => state.constructorBurger.items
   );
-  const orderRequest = useSelector(
-    (state: RootState) => state.order.orderRequest
-  );
-  const orderModalData = useSelector(
-    (state: RootState) => state.order.orderModalData
-  );
+  const orderRequest = useSelector((state) => state.order.orderRequest);
+  const orderModalData = useSelector((state) => state.order.orderModalData);
+  const user = useSelector((state) => state.profile.user);
 
   const onOrderClick = async () => {
     if (!constructorItems.bun || orderRequest) return;
+
+    if (!user) {
+      navigate('/login', { state: { from: '/' } });
+      return;
+    }
 
     const ingredientsIds = [
       constructorItems.bun._id,
