@@ -5,8 +5,7 @@ import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient, TOrder } from '@utils-types';
 import { selectAllIngredients } from '../../features/ingredients/ingredientsSelectors';
 import { useDispatch, useSelector } from '../../services/store';
-import { fetchFeeds } from '../../features/feedSlice/feedSlice';
-import { fetchUserOrders } from '../../features/userOrdersSlice/userOrdersSlice';
+import { fetchUserOrderByNumber } from '../../features/userOrdersSlice/userOrdersSlice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
@@ -14,27 +13,31 @@ export const OrderInfo: FC = () => {
   const ingredients = useSelector((state) => selectAllIngredients(state));
   const userOrders = useSelector((state) => state.userOrders.orders);
   const feedOrders = useSelector((state) => state.feed.orders);
+  const currentOrder = useSelector((state) => state.userOrders.currentOrder);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchFeeds());
-    dispatch(fetchUserOrders());
-  }, [dispatch]);
+    if (!number) return;
+
+    const isOrderExists =
+      userOrders.some((order) => order.number.toString() === number) ||
+      feedOrders.some((order) => order.number.toString() === number);
+
+    if (!isOrderExists) {
+      dispatch(fetchUserOrderByNumber(Number(number)));
+    }
+  }, [dispatch, number, userOrders, feedOrders]);
 
   const orderData = useMemo(() => {
     if (!number) return null;
-    let order = userOrders.find(
-      (order: TOrder) => order.number.toString() === number
+
+    return (
+      userOrders.find((order) => order.number.toString() === number) ||
+      feedOrders.find((order) => order.number.toString() === number) ||
+      currentOrder ||
+      null
     );
-
-    if (!order) {
-      order = feedOrders.find(
-        (order: TOrder) => order.number.toString() === number
-      );
-    }
-
-    return order || null;
-  }, [userOrders, feedOrders, number]);
+  }, [userOrders, feedOrders, currentOrder, number]);
 
   const orderInfo = useMemo(() => {
     if (!orderData || ingredients.length === 0) return null;
