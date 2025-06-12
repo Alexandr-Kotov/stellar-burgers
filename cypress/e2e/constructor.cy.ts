@@ -54,7 +54,9 @@ describe('Конструктор бургера — добавление инг�
 });
 describe('Модальное окно ингредиента', () => {
   beforeEach(() => {
-    cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
+    cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
+      'getIngredients'
+    );
     cy.visit('http://localhost:4000');
     cy.wait('@getIngredients');
   });
@@ -66,6 +68,10 @@ describe('Модальное окно ингредиента', () => {
 
     cy.get('[data-cy="modal"]').should('be.visible');
     cy.get('[data-cy="modal"] h3').should('contain.text', 'Детали ингредиента');
+    cy.get('[data-cy="modal"]').should(
+      'contain.text',
+      'Флюоресцентная булка R2-D3'
+    );
   });
 
   it('закрывается по крестику', () => {
@@ -93,16 +99,13 @@ describe('Модальное окно ингредиента', () => {
 
 describe('Процесс создания заказа', () => {
   beforeEach(() => {
-    cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
-
-    cy.intercept('POST', '**/orders', {
-      statusCode: 200,
-      body: {
-        success: true,
-        name: 'Заказ оформлен',
-        order: { number: 12345 }
-      },
-    }).as('createOrder');
+    cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
+      'getIngredients'
+    );
+    cy.intercept('POST', '**/orders', { fixture: 'order.json' }).as(
+      'createOrder'
+    );
+    cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as('getUser');
 
     cy.setCookie('accessToken', 'fake-access-token');
     cy.setCookie('refreshToken', 'fake-refresh-token');
@@ -111,11 +114,6 @@ describe('Процесс создания заказа', () => {
       win.localStorage.setItem('accessToken', 'fake-access-token');
       win.localStorage.setItem('refreshToken', 'fake-refresh-token');
     });
-
-    cy.intercept('GET', '**/auth/user', {
-      statusCode: 200,
-      body: { user: { name: 'Test User', email: 'test@example.com' } },
-    }).as('getUser');
 
     cy.visit('http://localhost:4000');
     cy.wait('@getIngredients');
@@ -171,4 +169,3 @@ describe('Процесс создания заказа', () => {
     );
   });
 });
-
