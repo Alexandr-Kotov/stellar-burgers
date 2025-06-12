@@ -34,7 +34,7 @@ export const registerUser = createAsyncThunk<
     localStorage.setItem('refreshToken', res.refreshToken);
     thunkAPI.dispatch(fetchUser());
   } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message || 'Registration failed');
+    return thunkAPI.rejectWithValue(err.message || 'Ошибка регистрации');
   }
 });
 
@@ -49,7 +49,7 @@ export const loginUser = createAsyncThunk<
     localStorage.setItem('refreshToken', res.refreshToken);
     thunkAPI.dispatch(fetchUser());
   } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message || 'Login failed');
+    return thunkAPI.rejectWithValue(err.message || 'Ошибка входа');
   }
 });
 
@@ -62,7 +62,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
       localStorage.removeItem('refreshToken');
       thunkAPI.dispatch(clearProfile());
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message || 'Logout failed');
+      return thunkAPI.rejectWithValue(err.message || 'Ошибка выхода');
     }
   }
 );
@@ -82,7 +82,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Registration failed';
+        state.error = action.payload || 'Ошибка регистрации';
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -93,7 +93,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Login failed';
+        state.error = action.payload || 'Ошибка входа';
       })
       .addCase(logoutUser.pending, (state) => {
         state.logoutLoading = true;
@@ -104,7 +104,7 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.logoutLoading = false;
-        state.logoutError = action.payload || 'Logout failed';
+        state.logoutError = action.payload || 'Ошибка выхода';
       });
   }
 });
