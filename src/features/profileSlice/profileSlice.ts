@@ -25,7 +25,9 @@ export const fetchUser = createAsyncThunk<TUser, void, { rejectValue: string }>(
       const res = await getUserApi();
       return res.user;
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message || 'Ошибка при загрузке пользователя');
+      return thunkAPI.rejectWithValue(
+        err.message || 'Ошибка при загрузке пользователя'
+      );
     }
   }
 );
@@ -39,7 +41,9 @@ export const updateUser = createAsyncThunk<
     const res = await updateUserApi(data);
     return res.user;
   } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message || 'Ошибка при обновлении пользователя');
+    return thunkAPI.rejectWithValue(
+      err.message || 'Ошибка при обновлении пользователя'
+    );
   }
 });
 
