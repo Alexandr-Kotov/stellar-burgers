@@ -14,7 +14,7 @@ export const fetchUserOrderByNumber = createAsyncThunk(
       const res = await getOrderByNumberApi(number);
       return res.orders[0];
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to load order');
+      return rejectWithValue(error.message || 'Не удалось загрузить заказ');
     }
   }
 );
@@ -48,7 +48,8 @@ const userOrdersSlice = createSlice({
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to load orders';
+        state.error =
+          (action.payload as string) || 'Не удалось загрузить заказы';
       })
       .addCase(fetchUserOrderByNumber.pending, (state) => {
         state.loading = true;
@@ -60,7 +61,8 @@ const userOrdersSlice = createSlice({
       })
       .addCase(fetchUserOrderByNumber.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to load order';
+        state.error =
+          (action.payload as string) || 'Не удалось загрузить заказ';
       });
   }
 });

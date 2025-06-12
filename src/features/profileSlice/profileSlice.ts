@@ -6,7 +6,7 @@ import {
 } from '../../utils/burger-api';
 import { TUser } from '../../utils/types';
 
-interface ProfileState {
+export interface ProfileState {
   user: TUser | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -25,7 +25,9 @@ export const fetchUser = createAsyncThunk<TUser, void, { rejectValue: string }>(
       const res = await getUserApi();
       return res.user;
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message || 'Fetch user failed');
+      return thunkAPI.rejectWithValue(
+        err.message || 'Ошибка при загрузке пользователя'
+      );
     }
   }
 );
@@ -39,7 +41,9 @@ export const updateUser = createAsyncThunk<
     const res = await updateUserApi(data);
     return res.user;
   } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message || 'Update failed');
+    return thunkAPI.rejectWithValue(
+      err.message || 'Ошибка при обновлении пользователя'
+    );
   }
 });
 
@@ -65,7 +69,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload || 'Fetch failed';
+        state.error = action.payload || 'Ошибка при загрузке пользователя';
       })
       .addCase(updateUser.pending, (state) => {
         state.status = 'loading';
@@ -77,7 +81,7 @@ const profileSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload || 'Update failed';
+        state.error = action.payload || 'Ошибка при обновлении пользователя';
       });
   }
 });
